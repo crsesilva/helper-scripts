@@ -1,0 +1,16 @@
+- hosts: G_FORTINET
+  gather_facts: no
+  tasks:
+  - name: Set backup
+    fortinet.fortios.fortios_monitor:
+      selector: 'backup.system.config'
+      vdom: "root"
+      params:
+        scope: 'global'
+    register: backupinfo
+
+  - name: Save backup locally
+    ansible.builtin.copy:
+      content: "{{ backupinfo.meta.raw }}"
+      dest: "./backups/{{ inventory_hostname }}-config.backup"
+

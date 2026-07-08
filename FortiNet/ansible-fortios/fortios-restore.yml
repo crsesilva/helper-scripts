@@ -1,0 +1,17 @@
+- hosts: G_FORTINET
+  gather_facts: no
+  vars:
+    vdom: "root"
+  tasks:
+  - name: Load backup file into Fortinet
+    set_fact:
+      backup_content: "{{ lookup('file', './backups/{{ inventory_hostname }}-config.backup') | b64encode }}"
+
+  - name: Restore settings
+    fortios_monitor:
+      selector: 'restore.system.config'
+      vdom: "{{ vdom }}"
+      params:
+        scope: 'global'
+        source: 'upload'
+        file_content: "{{ backup_content }}"
